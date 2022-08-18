@@ -1,0 +1,7 @@
+*.env
+# ignore ALL .log files
+*.log
+
+# ignore ALL files in ANY directory named temp
+env/
+env.json

@@ -1,0 +1,18 @@
+{
+    "insert_values":{
+        "client_group":"'Inventory Manufacturers dba'",
+        "file_type":"'raci_chart'",
+        "file_group":"'raci_chart'",
+        "div_id": 21143,
+        "process_language":"'PHP'",
+        "customer_profile_class": "null",
+        "ingest_target_table": "null",
+        "ingest_notice_days": 31,
+        "ingest_warning_days":61,
+        "active":1,
+        "email_operations_team":0,
+        "use_custom_schedule":0
+    }
+}
+
+           
