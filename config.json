@@ -12,7 +12,9 @@
         "active":1,
         "email_operations_team":0,
         "use_custom_schedule":0
-    }
+    },
+    "values_list": ["Inventory Manufacturers dba", "raci_chart","raci_chart",21143,"PHP","null","null",31,61,1,0, 0]
+    
 }
 
            

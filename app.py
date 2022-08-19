@@ -1,6 +1,7 @@
-import sys, json, argparse
-sys.path.append(".")
+import sys, json, argparse, os
+from string import Template
 from db_connect import Connection
+from php_format.format_php import format_php
 
 with open('env.json', 'r') as myfile:
     data=myfile.read()
@@ -19,11 +20,12 @@ env = env_json["environments"]
 dev_db_host= env['Dev']["host"]
 dev_db_user= env['Dev']["db_user"]
 dev_db_password= env['Dev']["db_password"]
+batch_path = env_json["paths"]["batch"]
+
 
 
 def ncs_new_client_insert(values, flag: str='--json'):
-    if values and "--json" in flag:
-        ncs_insert_query  = f"""
+    ncs_insert_query  = """
         INSERT INTO client_data_import.IMPORT_FILE_TYPE 
             (
             client_group,
@@ -39,6 +41,11 @@ def ncs_new_client_insert(values, flag: str='--json'):
             email_operations_team,
             use_custom_schedule
             ) 
+        {insert_values}
+            
+        """
+    if values and "--json" in flag:
+        json_values = f"""
         VALUES 
             (
                 {values["client_group"]},
@@ -55,22 +62,65 @@ def ncs_new_client_insert(values, flag: str='--json'):
                 {values["use_custom_schedule"]}
                 
             )
-            
         """
-        return ncs_insert_query
+        return ncs_insert_query.format(insert_values = json_values)
+    elif values and '--list' in flag:
+        insert_values= f"""
+        VALUES 
+            (
+                '{values[0]}',
+                '{values[1]}',
+                '{values[2]}',
+                {values[3]},
+                '{values[4]}',
+                {values[5]},
+                {values[6]},
+                {values[7]},
+                {values[8]},
+                {values[9]},
+                {values[10]},
+                {values[11]}
+            )
+        """
+        return ncs_insert_query.format(insert_values = insert_values)
 
     else:
-        return None
+        return  None
+
     
-#('Inventory Manufacturers dba', "raci_chart",'raci_chart',21143,'PHP',null,null,31,61,1,0, 0);
 
 arg_vals = sys.argv
 
 
 connection = Connection(dev_db_host, dev_db_user, dev_db_password)
-new_insert = connection.execute_query(ncs_new_client_insert(json_config["insert_values"],  '--json'))
+#new_insert = connection.execute_query(ncs_new_client_insert(json_config["insert_values"],  '--json'))
+
+#new_insert = connection.execute_query(ncs_new_client_insert(json_config["values_list"],  '--list'))
 select_query = "select * from client_data_import.import_file_type"
 client_import_file_type = connection.execute_read_query(select_query)
 print(client_import_file_type[-1])
-if new_insert:
-    connection.execute_query(f"delete from client_data_import.IMPORT_FILE_TYPE  where id = {client_import_file_type[-1][0]}")
+#if new_insert:
+#    connection.execute_query(f"delete from client_data_import.IMPORT_FILE_TYPE  where id = {client_import_file_type[-1][0]}")
+
+
+
+client_name = "placeholder"
+path = f'{batch_path}/client_data_import/{client_name}'
+
+if not os.path.exists(path):
+    os.makedirs(path)
+
+
+
+
+
+text = format_php('inventorymanufacturersdba', 'inventorymanufacturersdba', 21134, 21143)
+
+
+# writing new content to the file
+fp = open(f"{path}/img_alt.php", 'w')
+fp.write(text)
+print('Done Writing')
+fp.close()
+
+
